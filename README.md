@@ -5,5 +5,5 @@
 
 ## Code Availability
 
-The will be made publicly available soon. We are currently finalizing and preparing the code for release.
+The code will be available soon. We are currently finalizing and cleaning the code for release.
 
