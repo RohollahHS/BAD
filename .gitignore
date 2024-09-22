@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+./output/*
+
+checkpoints
+glove
+dataset/HumanML3D
+dataset/KIT-ML
+dataset/KIT-ML
+./dataset/prepare/download_humanml3d.sh
+./dataset/prepare/extract_humanml3d.sh
+output
+slurm*
+*ipynb*
+*.zip
+dest_dir/
+output_results/
+core*
+*.pth
+*.ckpt
+
+
+fid_results/
+jobs/
+diffusion/
+.vscode/
