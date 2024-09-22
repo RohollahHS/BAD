@@ -13,8 +13,7 @@ def get_args_parser():
     parser.add_argument('--seq_len', type=int, default=64, help='training motion length')
     
     ## optimization
-    parser.add_argument('--epochs', default=200_000, type=int, help='number of total iterations to run')
-    parser.add_argument('--total_iters', default=600_000, type=int)
+    parser.add_argument('--total_iters', default=350_000, type=int)
     parser.add_argument('--warm_up_iter', default=1000, type=int, help='number of total iterations for warmup')
     parser.add_argument('--lr', default=2e-4, type=float, help='max learning rate')
     parser.add_argument('--lr_scheduler', default=[150000], nargs="+", type=int, help="learning rate schedule (iterations)")
