@@ -98,7 +98,6 @@ python train_t2m_trans.py --exp_name 'train_tr' \
                           --total_batch_size 256 \
                           --vq_pretrained_path ./output/vq/vq_last.pth
 ```
-the KIT-ML dataset.
 - **`--z_0_attend_to_all`**: Specifies the causality condition for mask tokens, where each mask token attends to the last `T-p+1` mask tokens. If `z_0_attend_to_all` is not activated, each mask token attends to the first `p` mask tokens.
 - **`--time_cond`**: Uses time as one of the conditions for training the transformer.
 - **`--unmasked_tokens_not_attend_to_mask_tokens`**: Prohibits mask tokens from attending to other mask tokens.
