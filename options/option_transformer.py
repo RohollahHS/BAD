@@ -122,7 +122,7 @@ def get_args_parser():
     parser.add_argument('--length', type=int, help='length', default=-1)
     parser.add_argument('--repeat_times_generation', type=int, help='length', default=1)
 
-    parser.add_argument('--generate_inbetween', action='store_true')
+    parser.add_argument('--temporal_editing', action='store_true')
     parser.add_argument('--caption_inbetween', default='a man walks in a clockwise circle an then sits')
 
 

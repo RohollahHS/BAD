@@ -417,7 +417,7 @@ if __name__ == '__main__':
     kinematic_chain = t2m_kinematic_chain
     converter = Joint2BVHConvertor()
     
-    if not args.generate_inbetween:
+    if not args.temporal_editing:
         animation_dir = pjoin('output', 'visualization', 'animation')
         joints_dir = pjoin('output', 'visualization', 'joints')
     else:
@@ -438,7 +438,7 @@ if __name__ == '__main__':
         with torch.no_grad():
             print("--> Repeat %d"%r)
 
-            if not args.generate_inbetween:
+            if not args.temporal_editing:
                 pred_motions, m_length = bad(captions, args.length)
             else:
                 assert args.caption_inbetween is not None
@@ -471,7 +471,7 @@ if __name__ == '__main__':
             save_path = pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(k, r, m_length[k]))
             ik_save_path = pjoin(animation_path, "sample%d_repeat%d_len%d_ik.mp4"%(k, r, m_length[k]))
 
-            if args.generate_inbetween:
+            if args.temporal_editing:
                 base_caption = caption
                 caption_inbetween = caption_inbetween[k]
                 caption = f'{args.edit_task}\n=====\n{base_caption}\n=====\n{caption_inbetween}'

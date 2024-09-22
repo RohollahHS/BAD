@@ -179,7 +179,7 @@ python generate.py --caption 'a person jauntily skips forward.' \
 
 For temporal editing, run the following. 
 ```
-python generate.py --generate_inbetween \
+python generate.py --temporal_editing \
                    --caption 'a person jauntily skips forward.' \
                    --caption_inbetween 'a man walks in a clockwise circle an then sits.' \
                    --length 196 \
