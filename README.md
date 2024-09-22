@@ -1,4 +1,4 @@
-# BAD: Bidirectional Auto-regressive Diffusion for Text-to-Motion Generation
+# [BAD: Bidirectional Auto-regressive Diffusion for Text-to-Motion Generation](https://www.arxiv.org/abs/2409.10847)
 ### [[Paper]](https://www.arxiv.org/abs/2409.10847)
 ![Sample Image](visualization/quality-comp-walk_page-0001.jpg)
 If you find our code or paper helpful, please consider starring our repository and citing us.
