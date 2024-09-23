@@ -30,20 +30,20 @@ conda activate BAD
 
 #### Download Pre-trained Models
 ```
-bash prepare/download_models.sh
+bash dataset/prepare/download_models.sh
 ```
 
 #### Download SMPL Files
 For rendering.
 ```
-bash prepare/download_smpl_files.sh
+bash dataset/prepare/download_smpl_files.sh
 ```
 
 #### Download Evaluation Models and Gloves
 For evaluation only.
 ```
-bash prepare/download_extractor.sh
-bash prepare/download_glove.sh
+bash dataset/prepare/download_extractor.sh
+bash dataset/prepare/download_glove.sh
 ```
 
 #### Troubleshooting
