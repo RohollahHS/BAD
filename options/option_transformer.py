@@ -71,12 +71,12 @@ def get_args_parser():
     ## new options
     parser.add_argument('--sampling_type', default="CBS", choices=["CBS", "OAAS", "RS"], type=str, 
                         help='CBS: Confidence_Based_Sampling - OAAS: Order_Agnostic_Autoregressive_Sampling - RS: Random_Sampling')
-    parser.add_argument('--start_ids_in_sampling', choices=['ARANGED', 'RANDOM'], default='ARANGED')
-    parser.add_argument('--unmasked_tokens_not_attend_to_mask_tokens', action='store_true')
+    parser.add_argument('--start_ids_in_sampling', choices=['ARANGED', 'RANDOM'], default='RANDOM', help='if RANDOM, the generation starts with a random ordering. If ARANGED, the generation starts always with [1, 2, 3, .., T]')
+    parser.add_argument('--unmasked_tokens_not_attend_to_mask_tokens', action='store_true', help='prohibits unmasked tokens from attending to mask tokens')
     parser.add_argument('--use_relative_position', action='store_true')
-    parser.add_argument('--z_0_attend_to_all', action='store_true')
+    parser.add_argument('--z_0_attend_to_all', action='store_true', help='Specifies the causality condition for mask tokens, where each mask token attends to the last T-p+1 mask tokens. If z_0_attend_to_all is not activated, each mask token attends to the first p mask tokens')
     parser.add_argument('--mask_scheduler', default='cosine', type=str, choices=['cosine', 'linear', 'square'])
-    parser.add_argument('--max_steps_generation', default=10, type=int)
+    parser.add_argument('--max_steps_generation', default=10, type=int, help='The number of iterations during generation')
 
 ##########################################################################################################################################
 
@@ -121,8 +121,8 @@ def get_args_parser():
     parser.add_argument('--length', type=int, help='length', default=-1)
     parser.add_argument('--repeat_times_generation', type=int, help='length', default=1)
 
-    parser.add_argument('--temporal_editing', action='store_true')
-    parser.add_argument('--caption_inbetween', default='a man walks in a clockwise circle an then sits')
+    parser.add_argument('--temporal_editing', action='store_true', help='if you want to do temporal editing, you have to activate this.')
+    parser.add_argument('--caption_inbetween', default='a man walks in a clockwise circle an then sits', help='the caption for 4 temporal editing tasks.')
 
 
     return parser.parse_args()
