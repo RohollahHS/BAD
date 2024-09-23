@@ -13,7 +13,7 @@ If you find our code or paper helpful, please consider starring our repository a
 
 ## News
 
-📢 **2024-09-24** --- Initialized the webpage and git project.  
+📢 **2024-09-24** --- Initialized the git project.  
 
 
 ## Get You Ready
