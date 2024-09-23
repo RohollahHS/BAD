@@ -33,6 +33,12 @@ conda activate BAD
 bash prepare/download_models.sh
 ```
 
+#### Download SMPL Files
+For rendering.
+```
+bash prepare/download_smpl_files.sh
+```
+
 #### Download Evaluation Models and Gloves
 For evaluation only.
 ```
