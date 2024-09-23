@@ -24,6 +24,7 @@ If you find our code or paper helpful, please consider starring our repository a
 ```
 conda env create -f environment.yml
 conda activate BAD
+pip install git+https://github.com/openai/CLIP.git
 ```
 
 ### 2. Models and Dependencies
