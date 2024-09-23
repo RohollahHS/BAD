@@ -20,12 +20,12 @@ If you find our code or paper helpful, please consider starring our repository a
 
 <details>
   
-### 1. Conda Environment
-```
+### 1. Environment
+<!-- ```
 conda env create -f environment.yml
 conda activate BAD
 pip install git+https://github.com/openai/CLIP.git
-```
+``` -->
 
 ### 2. Models and Dependencies
 
