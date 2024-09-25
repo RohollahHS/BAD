@@ -31,6 +31,7 @@ pip install git+https://github.com/openai/CLIP.git
 ```
 
 We encountered issues when using the above environment for generation and visualization. As a result, we had to use a new environment. You may try changing the version of some packages from the previous environment, particularly numpy, and it might work. The new environment is based on the [Momask](https://github.com/EricGuo5513/momask-codes.git) environment, with additional packages like smplx from the [MDM](https://github.com/GuyTevet/motion-diffusion-model.git) environment.
+
 ```
 conda env create -f environment2.yml
 conda activate bad2
