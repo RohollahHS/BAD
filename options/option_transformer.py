@@ -124,16 +124,16 @@ def get_args_parser():
     parser.add_argument('--temporal_editing', action='store_true', help='if you want to do temporal editing, you have to activate this.')
     parser.add_argument('--caption_inbetween', default='a man walks in a clockwise circle an then sits', help='the caption for 4 temporal editing tasks.')
 
-    parser.add_argument('--long_range_generation', action='store_true')
-    # long_range_lengths: expects multiple integers
-    parser.add_argument('--long_range_lengths', 
+    parser.add_argument('--long_seq_generation', action='store_true')
+    # long_seq_lengths: expects multiple integers
+    parser.add_argument('--long_seq_lengths', 
                         type=int, 
                         nargs='+',
                         default=[128, 196, 128, 128, 128], 
                         help='Should be a list of integers between 40-196')
 
-    # long_range_captions: expects multiple strings
-    parser.add_argument('--long_range_captions', 
+    # long_seq_captions: expects multiple strings
+    parser.add_argument('--long_seq_captions', 
                         type=str, 
                         nargs='+', 
                         default=['a person runs forward and jumps.',

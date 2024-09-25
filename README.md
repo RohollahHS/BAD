@@ -213,11 +213,11 @@ python generate.py --temporal_editing \
 - **`--edit_task`**: Four edit tasks are available: `inbetween`, `outpainting`, `prefix`, and `suffix`.
 
 
-For long range generation, run the following. 
+For long sequence generation, run the following. 
 ```
-python generate.py --long_range_generation \
-                   --long_range_captions 'a person runs forward and jumps.' 'a person crawls.' 'a person does a cart wheel.' 'a person walks forward up stairs and then climbs down.' 'a person sits on the chair and then steps up.' \
-                   --long_range_lengths 128 196 128 128 128 \
+python generate.py --long_seq_generation \
+                   --long_seq_captions 'a person runs forward and jumps.' 'a person crawls.' 'a person does a cart wheel.' 'a person walks forward up stairs and then climbs down.' 'a person sits on the chair and then steps up.' \
+                   --long_seq_lengths 128 196 128 128 128 \
                    --z_0_attend_to_all \
                    --time_cond \
                    --sampling_type OAAS \
@@ -225,9 +225,9 @@ python generate.py --long_range_generation \
                    --resume_pth ./output/vq/vq_last.pth   \
                    --resume_trans ./output/t2m/trans_best_fid.pth
 ```
-- **`--long_range_generation`**: Activating long range generation.
-- **`--long_range_captions`**: Specifies multiple captions.
-- **`--long_range_lengths`**: Specifies multiple lengths (between 40 and 196) corresponding to each caption.
+- **`--long_seq_generation`**: Activating long sequence generation.
+- **`--long_seq_captions`**: Specifies multiple captions.
+- **`--long_seq_lengths`**: Specifies multiple lengths (between 40 and 196) corresponding to each caption.
 
 
 

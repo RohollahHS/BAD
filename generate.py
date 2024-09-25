@@ -341,11 +341,11 @@ if __name__ == '__main__':
         with torch.no_grad():
             print("--> Repeat %d"%r)
 
-            if not args.temporal_editing and not args.long_range_generation:
+            if not args.temporal_editing and not args.long_seq_generation:
                 pred_motions, m_length = bad(captions, args.length)
-            elif args.long_range_generation:
-                caption = args.long_range_captions
-                m_length = torch.tensor(args.long_range_lengths).to(args.device)
+            elif args.long_seq_generation:
+                caption = args.long_seq_captions
+                m_length = torch.tensor(args.long_seq_lengths).to(args.device)
                 pred_motions = bad.long_range(caption, m_length)
                 captions = [' | '.join(caption)]
                 m_length = torch.tensor([pred_motions.shape[1]])
