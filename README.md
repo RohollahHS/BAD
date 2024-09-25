@@ -249,7 +249,7 @@ python visualization/render_mesh.py \
 - **`--input_path`**: Path to the `.mp4` file, created by `generate.py`.
 - **`--npy_path`**: Path to the `.npy` file, created by `generate.py`
 
-For rendering `.obj` files using Blender, you can use the scripts in the [visualization/blender_scripts](https://github.com/RohollahHS/BAD/tree/master/visualization/blender_scripts) directory of your repository. First, open Blender, then go to **File -> Import -> Wavefront (.obj)**, navigate to the directory containing the `.obj` files, and press `A` to select and import all of them. Next, copy and paste the script from [visualization/blender_scripts/framing_coloring.py](https://github.com/RohollahHS/BAD/blob/master/visualization/blender_scripts/framing_coloring.py) into the **Scripting** tab in Blender, and run the script. Finally, you can render the animation in the **Render** tab.
+For rendering `.obj` files using Blender, you can use the scripts in the [visualization/blender_scripts](https://github.com/RohollahHS/BAD/tree/master/visualization/blender_scripts) directory. First, open Blender, then go to **File -> Import -> Wavefront (.obj)**, navigate to the directory containing the `.obj` files, and press `A` to select and import all of them. Next, copy and paste the script from [visualization/blender_scripts/framing_coloring.py](https://github.com/RohollahHS/BAD/blob/master/visualization/blender_scripts/framing_coloring.py) into the **Scripting** tab in Blender, and run the script. Finally, you can render the animation in the **Render** tab.
 
 
 
