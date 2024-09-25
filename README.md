@@ -211,6 +211,25 @@ python generate.py --temporal_editing \
 - **`--caption_inbetween`**: Text prompt used for generating the `inbetween`/`outpainting`/`prefix`/`suffix` motion sequence.
 - **`--edit_task`**: Four edit tasks are available: `inbetween`, `outpainting`, `prefix`, and `suffix`.
 
+
+For long range generation, run the following. 
+```
+python generate.py --long_range_generation \
+                   --long_range_captions 'a person runs forward and jumps.' 'a person crawls.' 'a person does a cart wheel.' 'a person walks forward up stairs and then climbs down.' 'a person sits on the chair and then steps up.' \
+                   --long_range_lengths 128 196 128 128 128 \
+                   --z_0_attend_to_all \
+                   --time_cond \
+                   --sampling_type OAAS \
+                   --unmasked_tokens_not_attend_to_mask_tokens \
+                   --resume_pth ./output/vq/vq_last.pth   \
+                   --resume_trans ./output/t2m/trans_best_fid.pth
+```
+- **`--long_range_generation`**: Activating long range generation.
+- **`--long_range_captions`**: Specifies multiple captions.
+- **`--long_range_lengths`**: Specifies multiple lengths (between 40 and 196) corresponding to each caption.
+
+
+
 </details>
 
 
@@ -230,7 +249,8 @@ python visualization/render_mesh.py \
 - **`--input_path`**: Path to the `.mp4` file, created by `generate.py`.
 - **`--npy_path`**: Path to the `.npy` file, created by `generate.py`
 
-For rendering `.obj` files I use the following procedure. First, you have to go to File->Import->Wavefront(.obj) in Blender. Then you have to copy and paste visualization/framing.py script and visualization/coloring.py script in `Scripting` tab in Blender and run the scripts.
+For rendering `.obj` files using Blender, you can use the scripts in the [visualization/blender_scripts]() directory of your repository. First, open Blender, then go to **File -> Import -> Wavefront (.obj)**, navigate to the directory containing the `.obj` files, and press `A` to select and import all of them. Next, copy and paste the script from [visualization/framing_coloring.py]() into the **Scripting** tab in Blender, and run the script. Finally, you can render the animation in the **Render** tab.
+
 
 
 </details>

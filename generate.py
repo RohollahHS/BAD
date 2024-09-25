@@ -266,19 +266,15 @@ class BAD(torch.nn.Module):
 
 
     def long_range(self, text, lengths, num_transition_token=2, output='concat', index_motion=None):
+        assert isinstance(text, list)
         b = len(text)
-        feat_clip_text = clip.tokenize(text, truncate=True).to(args.device)
-        feat_clip_text, word_emb = clip_model(feat_clip_text)
+        if isinstance(lengths, list):
+            lengths = torch.tensor(lengths).to(args.device)
+        feat_clip_text, word_emb = text_embedding(text)
         if index_motion is None:
             index_motion = self.maskdecoder(feat_clip_text, word_emb, type="sample", m_length=lengths)
 
         m_token_length = torch.ceil((lengths)/4).int()
-        if output == 'eval':
-            frame_length = m_token_length * 4
-            m_token_length = m_token_length.clone()
-            m_token_length = m_token_length - 2*num_transition_token
-            m_token_length[[0,-1]] += num_transition_token # first and last have transition only half
-        
         half_token_length = (m_token_length/2).int()
         idx_full_len = half_token_length >= 24
         half_token_length[idx_full_len] = half_token_length[idx_full_len] - 1
@@ -288,20 +284,10 @@ class BAD(torch.nn.Module):
         transition_train_length = []
         
         for i in range(b-1):
-            if output == 'concat':
-                i_index_motion = index_motion[i]
-                i1_index_motion = index_motion[i+1]
-            if output == 'eval':
-                if i == 0:
-                    i_index_motion = index_motion[i, :m_token_length[i]]
-                else:
-                    i_index_motion = index_motion[i, num_transition_token:m_token_length[i] + num_transition_token]
-                if i == b-1:
-                    i1_index_motion = index_motion[i+1, :m_token_length[i+1]]
-                else:
-                    i1_index_motion = index_motion[i+1, 
-                                                num_transition_token:m_token_length[i+1] + num_transition_token]
+            i_index_motion = index_motion[i]
+            i1_index_motion = index_motion[i+1]
             left_end = half_token_length[i]
+
             right_start = left_end + num_transition_token
             end = right_start + half_token_length[i+1]
 
@@ -309,103 +295,20 @@ class BAD(torch.nn.Module):
             tokens[i, left_end:right_start] = mask_id
             tokens[i, right_start:end] = i1_index_motion[:half_token_length[i+1]]
             transition_train_length.append(end)
+
         transition_train_length = torch.tensor(transition_train_length).to(index_motion.device)
-        text = clip.tokenize(text[:-1], truncate=True).to(args.device)
-        feat_clip_text, word_emb_clip = clip_model(text)
+        feat_clip_text, word_emb_clip = text_embedding(text[:-1])
         inpaint_index = self.maskdecoder(feat_clip_text, word_emb_clip, type="sample", m_length=transition_train_length*4, token_cond=tokens, max_steps=1)
         
-        if output == 'concat':
-            all_tokens = []
-            for i in range(b-1):
-                all_tokens.append(index_motion[i, :m_token_length[i]])
-                all_tokens.append(inpaint_index[i, tokens[i] == mask_id])
-            all_tokens.append(index_motion[-1, :m_token_length[-1]])
-            all_tokens = torch.cat(all_tokens).unsqueeze(0)
-            pred_pose = self.vqvae(all_tokens, type='decode')
-            return pred_pose
-        elif output == 'eval':
-            all_tokens = []
-            for i in range(b):
-                motion_token = index_motion[i, :m_token_length[i]]
-                if i == 0:
-                    first_current_trans_tok = inpaint_index[i, tokens[i] == mask_id]
-                    all_tokens.append(motion_token)
-                    all_tokens.append(first_current_trans_tok)
-                else:
-                    if i < b-1:
-                        first_current_trans_tok = inpaint_index[i, tokens[i] == mask_id]
-                        all_tokens.append(motion_token)
-                        all_tokens.append(first_current_trans_tok)
-                    else:
-                        all_tokens.append(motion_token)
-            all_tokens = torch.cat(all_tokens)
-            pred_pose_concat = self.vqvae(all_tokens.unsqueeze(0), type='decode')
-            
-            trans_frame = num_transition_token*4
-            pred_pose = torch.zeros((b, 196, 263)).to(args.device)
-            current_point = 0
-            for i in range(b):
-                if i == 0:
-                    start_f = torch.tensor(0)
-                    end_f = frame_length[i]
-                else:
-                    start_f = current_point - trans_frame
-                    end_f = start_f + frame_length[i]
-                current_point = end_f
-                pred_pose[i, :frame_length[i]] = pred_pose_concat[0, start_f: end_f]
-            return pred_pose
+        all_tokens = []
+        for i in range(b-1):
+            all_tokens.append(index_motion[i, :m_token_length[i]])
+            all_tokens.append(inpaint_index[i, tokens[i] == mask_id])
+        all_tokens.append(index_motion[-1, :m_token_length[-1]])
+        all_tokens = torch.cat(all_tokens).unsqueeze(0)
+        pred_pose = self.vqvae(all_tokens, type='decode')
+        return pred_pose
 
-    def upper_edit(self, pose, m_length, upper_text, lower_mask=None):
-        pose = pose.clone().to(args.device).float() # bs, nb_joints, joints_dim, seq_len
-        m_tokens_len = torch.ceil((m_length)/4)
-        bs, seq = pose.shape[:2]
-        max_motion_length = int(seq/4) + 1
-        mot_end_idx = self.vqvae.vqvae.num_code
-        mot_pad_idx = self.vqvae.vqvae.num_code + 1
-        mask_id = self.vqvae.vqvae.num_code + 2
-        target_lower = []
-        for k in range(bs):
-            target = self.vqvae(pose[k:k+1, :m_length[k]], type='encode')
-            if m_tokens_len[k]+1 < max_motion_length:
-                target = torch.cat([target, 
-                                    torch.ones((1, 1, 2), dtype=int, device=target.device) * mot_end_idx, 
-                                    torch.ones((1, max_motion_length-1-m_tokens_len[k].int().item(), 2), dtype=int, device=target.device) * mot_pad_idx], axis=1)
-            else:
-                target = torch.cat([target, 
-                                    torch.ones((1, 1, 2), dtype=int, device=target.device) * mot_end_idx], axis=1)
-            target_lower.append(target[..., 1])
-        target_lower = torch.cat(target_lower, axis=0)
-
-        ### lower mask ###
-        if lower_mask is not None:
-            lower_mask = torch.cat([lower_mask, torch.zeros(bs, 1, dtype=int)], dim=1).bool()
-            target_lower_masked = target_lower.clone()
-            target_lower_masked[lower_mask] = mask_id
-            select_end = target_lower == mot_end_idx
-            target_lower_masked[select_end] = target_lower[select_end]
-        else:
-            target_lower_masked = target_lower
-        ##################
-
-        pred_len = m_length.to(args.device)
-        pred_tok_len = m_tokens_len
-        pred_pose_eval = torch.zeros((bs, seq, pose.shape[-1])).to(args.device)
-
-        # __upper_text__ = ['A man punches with right hand.'] * 32
-        text = clip.tokenize(upper_text, truncate=True).to(args.device)
-        feat_clip_text, word_emb_clip = clip_model(text)
-        # index_motion = trans_encoder(feat_clip_text, idx_lower=target_lower_masked, word_emb=word_emb_clip, type="sample", m_length=pred_len, CFG=-1)
-        index_motion = self.maskdecoder(feat_clip_text, target_lower_masked, word_emb_clip, type="sample", m_length=pred_len)
-        for i in range(bs):
-            all_tokens = torch.cat([
-                index_motion[i:i+1, :int(pred_tok_len[i].item()), None],
-                target_lower[i:i+1, :int(pred_tok_len[i].item()), None]
-            ], axis=-1)
-            pred_pose = self.vqvae(all_tokens, type='decode')
-            pred_pose_eval[i:i+1, :int(pred_len[i].item())] = pred_pose
-
-        return pred_pose_eval
-    
 
 if __name__ == '__main__':
     args = option_trans.get_args_parser()
@@ -417,7 +320,7 @@ if __name__ == '__main__':
     kinematic_chain = t2m_kinematic_chain
     converter = Joint2BVHConvertor()
     
-    if not args.temporal_editing:
+    if not args.temporal_editing :
         animation_dir = pjoin('output', 'visualization', 'animation')
         joints_dir = pjoin('output', 'visualization', 'joints')
     else:
@@ -438,8 +341,14 @@ if __name__ == '__main__':
         with torch.no_grad():
             print("--> Repeat %d"%r)
 
-            if not args.temporal_editing:
+            if not args.temporal_editing and not args.long_range_generation:
                 pred_motions, m_length = bad(captions, args.length)
+            elif args.long_range_generation:
+                caption = args.long_range_captions
+                m_length = torch.tensor(args.long_range_lengths).to(args.device)
+                pred_motions = bad.long_range(caption, m_length)
+                captions = [' | '.join(caption)]
+                m_length = torch.tensor([pred_motions.shape[1]])
             else:
                 assert args.caption_inbetween is not None
                 pose_base, m_length = bad(captions, args.length)
@@ -462,8 +371,8 @@ if __name__ == '__main__':
             joint_data = joint_data[:m_length[k]]
             joint = recover_from_ric(torch.from_numpy(joint_data).float(), 22).numpy()
 
-            bvh_path = pjoin(animation_path, "sample%d_repeat%d_len%d_ik.bvh"%(k, r, m_length[k]))
-            _, ik_joint = converter.convert(joint, filename=bvh_path, iterations=100)
+            # bvh_path = pjoin(animation_path, "sample%d_repeat%d_len%d_ik.bvh"%(k, r, m_length[k]))
+            # _, ik_joint = converter.convert(joint, filename=bvh_path, iterations=100)
 
             bvh_path = pjoin(animation_path, "sample%d_repeat%d_len%d.bvh" % (k, r, m_length[k]))
             _, joint = converter.convert(joint, filename=bvh_path, iterations=100, foot_ik=False)
@@ -471,15 +380,15 @@ if __name__ == '__main__':
             save_path = pjoin(animation_path, "sample%d_repeat%d_len%d.mp4"%(k, r, m_length[k]))
             ik_save_path = pjoin(animation_path, "sample%d_repeat%d_len%d_ik.mp4"%(k, r, m_length[k]))
 
-            if args.temporal_editing:
+            if args.temporal_editing :
                 base_caption = caption
                 caption_inbetween = caption_inbetween[k]
                 caption = f'{args.edit_task}\n=====\n{base_caption}\n=====\n{caption_inbetween}'
 
-            plot_3d_motion(ik_save_path, kinematic_chain, ik_joint, title=caption, fps=20)
+            # plot_3d_motion(ik_save_path, kinematic_chain, ik_joint, title=caption, fps=20)
             plot_3d_motion(save_path, kinematic_chain, joint, title=caption, fps=20)
             np.save(pjoin(joint_path, "sample%d_repeat%d_len%d.npy"%(k, r, m_length[k])), joint)
-            np.save(pjoin(joint_path, "sample%d_repeat%d_len%d_ik.npy"%(k, r, m_length[k])), ik_joint)
+            # np.save(pjoin(joint_path, "sample%d_repeat%d_len%d_ik.npy"%(k, r, m_length[k])), ik_joint)
 
             print('animation_path:', save_path)
             print('joint_path:', pjoin(joint_path, "sample%d_repeat%d_len%d.npy"%(k, r, m_length[k])))

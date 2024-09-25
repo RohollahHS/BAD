@@ -13,7 +13,7 @@ def get_args_parser():
     parser.add_argument('--seq_len', type=int, default=64, help='training motion length')
     
     ## optimization
-    parser.add_argument('--total_iters', default=350_000, type=int)
+    parser.add_argument('--total_iters', default=350_000, type=int, help='total iters for trianing transformer')
     parser.add_argument('--warm_up_iter', default=1000, type=int, help='number of total iterations for warmup')
     parser.add_argument('--lr', default=2e-4, type=float, help='max learning rate')
     parser.add_argument('--lr_scheduler', default=[150000], nargs="+", type=int, help="learning rate schedule (iterations)")
@@ -124,5 +124,23 @@ def get_args_parser():
     parser.add_argument('--temporal_editing', action='store_true', help='if you want to do temporal editing, you have to activate this.')
     parser.add_argument('--caption_inbetween', default='a man walks in a clockwise circle an then sits', help='the caption for 4 temporal editing tasks.')
 
+    parser.add_argument('--long_range_generation', action='store_true')
+    # long_range_lengths: expects multiple integers
+    parser.add_argument('--long_range_lengths', 
+                        type=int, 
+                        nargs='+',
+                        default=[128, 196, 128, 128, 128], 
+                        help='Should be a list of integers between 40-196')
+
+    # long_range_captions: expects multiple strings
+    parser.add_argument('--long_range_captions', 
+                        type=str, 
+                        nargs='+', 
+                        default=['a person runs forward and jumps.',
+                                 'a person crawls.',
+                                 'a person does a cartwheel.',
+                                 'a person walks forward up stairs and then climbs down.',
+                                 'a person sits on the chair and then steps up.'],
+                        help='Should be a list of captions (strings)')
 
     return parser.parse_args()
