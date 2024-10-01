@@ -1,5 +1,6 @@
 # [BAD: Bidirectional Auto-regressive Diffusion for Text-to-Motion Generation](https://www.arxiv.org/abs/2409.10847)
-### [[Paper]](https://www.arxiv.org/abs/2409.10847) [[Project Page]](https://rohollahhs.github.io/BAD-page/) More samples will be added.
+### [[Paper]](https://www.arxiv.org/abs/2409.10847) [[Project Page]](https://rohollahhs.github.io/BAD-page/) [[Colab]](https://colab.research.google.com/drive/1vsLKHR0DVY4moKC0SFuM8IVLJDHyLTkn?usp=sharing)
+
 ![Sample Image](visualization/quality-comp-walk_page-0001.jpg)
 If you find our code or paper helpful, please consider starring our repository and citing us.
 ```
