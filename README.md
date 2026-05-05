@@ -1,4 +1,4 @@
-# [BAD: Bidirectional Auto-regressive Diffusion for Text-to-Motion Generation](https://www.arxiv.org/abs/2409.10847)
+# [BAD: Bidirectional Auto-regressive Diffusion for Text-to-Motion Generation (ICASSP 2025)](https://www.arxiv.org/abs/2409.10847)
 ### [[Paper]](https://www.arxiv.org/abs/2409.10847) [[Project Page]](https://rohollahhs.github.io/BAD-page/) [[Colab]](https://colab.research.google.com/drive/1vsLKHR0DVY4moKC0SFuM8IVLJDHyLTkn?usp=sharing)
 
 ![Sample Image](visualization/quality-comp-walk_page-0001.jpg)
